@@ -74,11 +74,11 @@ open_ai_agent = initialize_agent(
 
 
 @app.post("/webhooks/line")
-async def handle_callback(request: Request):
+def handle_callback(request: Request):
     signature = request.headers['X-Line-Signature']
 
     # get request body as text
-    body = await request.body()
+    body = request.body()
     body = body.decode()
 
     try:
@@ -100,7 +100,7 @@ async def handle_callback(request: Request):
 
         tool_result = open_ai_agent.run(event.message.text)
 
-        await line_bot_api.reply_message(
+        line_bot_api.reply_message(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
                 messages=[TextMessage(text=tool_result)]
