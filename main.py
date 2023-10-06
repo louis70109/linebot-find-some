@@ -1,15 +1,6 @@
-from stock_peformace import StockPercentageChangeTool, StockGetBestPerformingTool
-from stock_price import StockPriceTool
-from langchain.schema import HumanMessage
-from langchain.agents import initialize_agent, Tool
-from langchain.agents import AgentType
-from langchain.chat_models import ChatOpenAI
 import logging
 import os
-from wikipedia import WikiTool
-
-from youtube_restaurant import FindYoutubeVideoTool
-
+import sys
 
 if os.getenv('API_ENV') != 'production':
     from dotenv import load_dotenv
@@ -34,6 +25,16 @@ from linebot.v3.webhooks import (
     MessageEvent,
     TextMessageContent
 )
+
+from stock_peformace import StockPercentageChangeTool, StockGetBestPerformingTool
+from stock_price import StockPriceTool
+from langchain.schema import HumanMessage
+from langchain.agents import initialize_agent, Tool
+from langchain.agents import AgentType
+from langchain.chat_models import ChatOpenAI
+from wikipedia import WikiTool
+from youtube_restaurant import FindYoutubeVideoTool
+
 logging.basicConfig(level=os.getenv('LOG', 'WARNING'))
 logger = logging.getLogger(__file__)
 
@@ -64,7 +65,7 @@ tools = [
     StockPriceTool(), StockPercentageChangeTool(),
     StockGetBestPerformingTool(), FindYoutubeVideoTool(),
     WikiTool()
-    ]
+]
 open_ai_agent = initialize_agent(
     tools,
     model,
