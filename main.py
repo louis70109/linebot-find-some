@@ -1,3 +1,4 @@
+from http.client import HTTPException
 import logging
 import os
 import sys
@@ -74,11 +75,11 @@ open_ai_agent = initialize_agent(
 
 
 @app.post("/webhooks/line")
-def handle_callback(request: Request):
+async def handle_callback(request: Request):
     signature = request.headers['X-Line-Signature']
 
     # get request body as text
-    body = request.body()
+    body = await request.body()
     body = body.decode()
 
     try:
@@ -100,7 +101,7 @@ def handle_callback(request: Request):
 
         tool_result = open_ai_agent.run(event.message.text)
 
-        line_bot_api.reply_message(
+        await line_bot_api.reply_message(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
                 messages=[TextMessage(text=tool_result)]
