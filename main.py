@@ -2,6 +2,7 @@ from http.client import HTTPException
 import logging
 import os
 import sys
+from g_cal_url import CalendarTool
 
 if os.getenv('API_ENV') != 'production':
     from dotenv import load_dotenv
@@ -63,8 +64,9 @@ parser = WebhookParser(channel_secret)
 # Langchain (you must use 0613 model to use OpenAI functions.)
 model = ChatOpenAI(model="gpt-3.5-turbo-0613")
 tools = [
-    StockPriceTool(), StockPercentageChangeTool(),
-    StockGetBestPerformingTool(), FindYoutubeVideoTool(),
+    StockPriceTool(), StockPercentageChangeTool(), StockGetBestPerformingTool(),
+    CalendarTool(),
+    FindYoutubeVideoTool(),
     WikiTool()
 ]
 open_ai_agent = initialize_agent(
@@ -93,20 +95,22 @@ async def handle_callback(request: Request):
             continue
         if not isinstance(event.message, TextMessageContent):
             continue
-        # await line_bot_api.push_message(push_message_request=PushMessageRequest(
-        #     to=event.source.user_id,
-        #     messages=[TextMessage(text=event.message.text,
-        #                           quoteToken=event.message.quote_token)],
-        # ))
-
         tool_result = open_ai_agent.run(event.message.text)
+        
+        await line_bot_api.push_message(push_message_request=PushMessageRequest(
+            to=event.source.user_id,
+            messages=[TextMessage(
+                text=tool_result,
+                quoteToken=event.message.quote_token)],
+        ))
 
-        await line_bot_api.reply_message(
-            ReplyMessageRequest(
-                reply_token=event.reply_token,
-                messages=[TextMessage(text=tool_result)]
-            )
-        )
+
+        # await line_bot_api.reply_message(
+        #     ReplyMessageRequest(
+        #         reply_token=event.reply_token,
+        #         messages=[TextMessage(text=tool_result)]
+        #     )
+        # )
 
     return 'OK'
 

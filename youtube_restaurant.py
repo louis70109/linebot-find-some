@@ -24,7 +24,7 @@ class FindYoutubeVideoTool(BaseTool):
         youtube_str = tool.run(title)  # force change str to list
         youtube_list = literal_eval(youtube_str)
         for i in range(len(youtube_list)):
-            youtube_list[i] = f'https://www.youtube.com/{youtube_list[i]}'
+            youtube_list[i] = youtube_list[i]
         return youtube_list
 
     args_schema: Optional[Type[BaseModel]] = YoutubeDefineInput

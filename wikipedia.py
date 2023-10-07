@@ -19,7 +19,7 @@ class WikiInput(BaseModel):
 
 class WikiTool(BaseTool):
     name = "find_wikipedia_information"
-    description = f"Use wikipedia resources to find unknown information."
+    description = "Use wikipedia resources to find unknown information."
 
     def _run(self, title: str, link: str):
         print("Wiki")
