@@ -95,23 +95,22 @@ async def handle_callback(request: Request):
             continue
         if not isinstance(event.message, TextMessageContent):
             continue
+
+        await line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text='請稍候...查詢中')]
+            )
+        )
+
         tool_result = open_ai_agent.run(event.message.text)
-        
+
         await line_bot_api.push_message(push_message_request=PushMessageRequest(
             to=event.source.user_id,
             messages=[TextMessage(
                 text=tool_result,
                 quoteToken=event.message.quote_token)],
         ))
-
-
-        # await line_bot_api.reply_message(
-        #     ReplyMessageRequest(
-        #         reply_token=event.reply_token,
-        #         messages=[TextMessage(text=tool_result)]
-        #     )
-        # )
-
     return 'OK'
 
 
